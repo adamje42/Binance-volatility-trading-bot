@@ -237,7 +237,7 @@ def external_signals():
             if DEBUG: print(f"{txcolors.WARNING}Could not remove external signalling file{txcolors.DEFAULT}")
 
     return external_list
-    
+
 
 def balance_report():
     global profit_history, unrealised_percent
@@ -336,8 +336,15 @@ def convert_volume():
     return volume, last_price
 
 
+def test_order_id():
+    import random
+    """returns a fake order id by hashing the current time"""
+    test_order_id_number = random.randint(100000000,999999999)
+    return test_order_id_number
+
 def buy():
     '''Place Buy market orders for each volatile coin found'''
+    global test_order_id
     volume, last_price = convert_volume()
     orders = {}
 
@@ -348,7 +355,7 @@ def buy():
         if TEST_MODE:
             orders[coin] = [{
                 'symbol': coin,
-                'orderId': 0,
+                'orderId': test_order_id(),
                 'time': datetime.now().timestamp()
             }]
 
@@ -383,7 +390,7 @@ def buy():
                 time.sleep(1)
 
             else:
-                print('Order returned, saving order to file')
+                print('Order returned, saving order to file..')
 
                 # Log trade
                 write_log(f"Buy : {volume[coin]} {coin} - {last_price[coin]['price']}")
@@ -394,16 +401,17 @@ def buy():
 
 def sell_coins():
     '''sell coins that have reached the STOP LOSS or TAKE PROFIT threshold'''
-    global hsp_head, session_profit, profit_history
+    global hsp_head, session_profit, profit_history,coin_order_id
     last_price = get_price(False) # don't populate rolling window
     #last_price = get_price(add_to_historical=True) # don't populate rolling window
     coins_sold = {}
 
     for coin in list(coins_bought):
+
+
         # define stop loss and take profit
         TP = float(coins_bought[coin]['bought_at']) + (float(coins_bought[coin]['bought_at']) * coins_bought[coin]['take_profit']) / 100
         SL = float(coins_bought[coin]['bought_at']) + (float(coins_bought[coin]['bought_at']) * coins_bought[coin]['stop_loss']) / 100
-
 
         LastPrice = float(last_price[coin]['price'])
         sellFee = (coins_bought[coin]['volume'] * LastPrice) * (TRADING_FEE/100)
@@ -423,6 +431,10 @@ def sell_coins():
         # check that the price is below the stop loss or above take profit (if trailing stop loss not used) and sell if this is the case
         if LastPrice < SL or LastPrice > TP and not USE_TRAILING_STOP_LOSS:
             print(f"{txcolors.SELL_PROFIT if PriceChange >= 0. else txcolors.SELL_LOSS}TP or SL reached, selling {coins_bought[coin]['volume']} {coin} - {float(BuyPrice):g} - {float(LastPrice):g} : {PriceChange-(buyFee+sellFee):.2f}% Est: {(QUANTITY*(PriceChange-(buyFee+sellFee)))/100:.{decimals()}f} {PAIR_WITH}{txcolors.DEFAULT}")
+
+#             if coins_bought[coin]['orderid'] is coin_order_id:
+#                 print(f"this coin has an order ID of {coins_bought[coin]['orderid']}")
+
             # try to create a real order
             try:
                 if not TEST_MODE:
@@ -439,7 +451,10 @@ def sell_coins():
 
             # run the else block if coin has been sold and create a dict for each coin sold
             else:
+#                 coins_sold[coin]['orderid'] = coins_bought[coin]['orderid']
                 coins_sold[coin] = coins_bought[coin]
+#                 print(f"{coins_sold[coin]}")
+                # coins_sold[coin] = coins_bought[coin]['orderid']
 
                 # prevent system from buying this coin for the next TIME_DIFFERENCE minutes
                 volatility_cooloff[coin] = datetime.now()
@@ -460,13 +475,14 @@ def sell_coins():
     if hsp_head == 1 and len(coins_bought) == 0: print(f"No trade slots are currently in use")
 
     return coins_sold
+#     return coin_order_id
 
 
 def update_portfolio(orders, last_price, volume):
     '''add every coin bought to our portfolio for tracking/selling later'''
     global profit_history
 
-    if DEBUG: print(orders)
+#     print(orders)
     for coin in orders:
 
         coins_bought[coin] = {
@@ -482,21 +498,42 @@ def update_portfolio(orders, last_price, volume):
         # save the coins in a json file in the same directory
         with open(coins_bought_file_path, 'w') as file:
             json.dump(coins_bought, file, indent=4)
-            
+
         #save session info for through session portability
         with open(profit_history_file_path, 'w') as file:
             json.dump(profit_history, file, indent=4)
 
-        print(f'Order with id {orders[coin][0]["orderId"]} placed and saved to file')
+        print(f'Order for {orders[coin][0]["symbol"]} with ID {orders[coin][0]["orderId"]} placed and saved to file.')
 
 
 def remove_from_portfolio(coins_sold):
     '''Remove coins sold due to SL or TP from portfolio'''
-    for coin in coins_sold:
-        coins_bought.pop(coin)
+    for coin,data in coins_sold.items():
+        symbol = coin
+        order_id = data['orderid']
 
-    with open(coins_bought_file_path, 'w') as file:
-        json.dump(coins_bought, file, indent=4)
+        for bought_coin, bought_coin_data in coins_bought.items():
+            if bought_coin_data['orderid'] == order_id:
+                print(f"Sold {bought_coin}, removed order ID {order_id} from history.")
+                coins_bought.pop(bought_coin)
+                with open(coins_bought_file_path, 'w') as file:
+                    json.dump(coins_bought, file, indent=4)
+                break
+
+
+
+
+#         coins_bought_new = list(filter(lambda ID : (coin['orderid'] != ID) , coins_bought))
+
+
+
+#         if coins_bought[coin]['orderid'] == ID:
+#             print(f"found {coin} with orderid {coins_sold[coin]['orderid']}")
+#             coins_bought.pop(coin)
+#             print(f"removed {ID}")
+
+#         with open(coins_bought_file_path, 'w') as file:
+#             json.dump(coins_bought_new, file, indent=4)
 
 
 def write_log(logline):
@@ -583,7 +620,7 @@ if __name__ == '__main__':
         client = Client(access_key, secret_key, tld='us')
     else:
         client = Client(access_key, secret_key)
-        
+
     # If the users has a bad / incorrect API key.
     # this will stop the script from starting, and display a helpful error.
     api_ready, msg = test_api_key(client, BinanceAPIException)
@@ -598,11 +635,11 @@ if __name__ == '__main__':
 
     # path to the saved coins_bought file
     coins_bought_file_path = 'coins_bought.json'
-    
+
     # The below mod was stolen and altered from GoGo's fork, a nice addition for keeping a historical history of profit across multiple bot sessions.
     # profit_history is calculated in %, apparently: "this is inaccurate if QUANTITY is not the same!"
     profit_history_file_path = 'profit_history.json'
-    
+
     if os.path.isfile(profit_history_file_path) and os.stat(profit_history_file_path).st_size!= 0:
        json_file=open(profit_history_file_path)
        profit_history=json.load(json_file)
