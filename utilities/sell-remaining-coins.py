@@ -18,7 +18,8 @@ from helpers.handle_creds import (
 
 args = parse_args()
 
-DEFAULT_CONFIG_FILE = '../config.yml'
+# DEFAULT_CONFIG_FILE = '../config.yml'
+DEFAULT_CONFIG_FILE = '../config_custom_example.yml'
 DEFAULT_CREDS_FILE = '../creds.yml'
 
 config_file = args.config if args.config else DEFAULT_CONFIG_FILE

@@ -24,7 +24,7 @@ OSC_INDICATORS = ['MACD', 'Stoch.RSI', 'Mom'] # Indicators to use in Oscillator 
 OSC_THRESHOLD = 2 # Must be less or equal to number of items in OSC_INDICATORS 
 MA_INDICATORS = ['EMA10', 'EMA20'] # Indicators to use in Moving averages analysis
 MA_THRESHOLD = 2 # Must be less or equal to number of items in MA_INDICATORS
-INTERVAL = Interval.INTERVAL_5_MINUTES #Timeframe for analysis
+INTERVAL = parsed_config['trading_options']['TIME_DIFFERENCE'] # Time period to analyse signals for
 
 EXCHANGE = 'BINANCE'
 SCREENER = 'CRYPTO'

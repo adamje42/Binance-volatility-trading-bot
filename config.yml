@@ -63,6 +63,8 @@ trading_options:
   CUSTOM_SIGNALS: False
   # Name of custom signals list
   SIGNALS_LIST: 'signalsample.txt'
+  # Specify in minutes the frequency to check for trading signals from TradingView
+  SIGNALS_FREQUENCY: 1
 
   # whether to use trailing stop loss or not; default is True
   USE_TRAILING_STOP_LOSS: True

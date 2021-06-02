@@ -511,7 +511,7 @@ def remove_from_portfolio(coins_sold):
     for coin,data in coins_sold.items():
         symbol = coin
         order_id = data['orderid']
-
+        # code below created by getsec <3
         for bought_coin, bought_coin_data in coins_bought.items():
             if bought_coin_data['orderid'] == order_id:
                 print(f"Sold {bought_coin}, removed order ID {order_id} from history.")
