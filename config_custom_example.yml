@@ -22,7 +22,10 @@ trading_options:
   # Binance uses a minimum of 10 USDT per trade, add a bit extra to enable selling if the price drops.
   # USDT - Recommended: no less than 12. Suggested: 15 or more.
   # ETH - Recommended: no less than 0.006.
-  QUANTITY: 0.00028363
+  #  QUANTITY: 0.0001765 @ 82
+  # or 67 slots with 0.000216
+
+  QUANTITY: 0.000205
 
 
   # List of trading pairs to exclude
@@ -36,7 +39,7 @@ trading_options:
     - UP
 
   # Maximum number of trade 'slots' at any time (your USDT balance must be at least TRADE_SLOTS * QUANTITY)
-  TRADE_SLOTS: 75
+  TRADE_SLOTS: 100
 
   # the amount of time in MINUTES to calculate the difference from the current price (minimum: 1).
   TIME_DIFFERENCE: 5
@@ -46,13 +49,13 @@ trading_options:
   RECHECK_INTERVAL: 50
 
   # the difference in % between the first and second checks for the price.
-  CHANGE_IN_PRICE: 2.5
+  CHANGE_IN_PRICE: 2
 
   # define in % when to sell a coin that's not making a profit.
-  STOP_LOSS: 5
+  STOP_LOSS: 99
 
   # define in % when to take profit on a profitable coin.
-  TAKE_PROFIT: 0.01
+  TAKE_PROFIT: 0.06
 
   # Use custom tickers.txt list for filtering pairs.
   CUSTOM_LIST: True
@@ -73,7 +76,7 @@ trading_options:
   # when hit TAKE_PROFIT, move STOP_LOSS to TRAILING_STOP_LOSS percentage points below TAKE_PROFIT hence locking in profit
   # when hit TAKE_PROFIT, move TAKE_PROFIT up by TRAILING_TAKE_PROFIT percentage points
   TRAILING_STOP_LOSS: .4
-  TRAILING_TAKE_PROFIT: .1
+  TRAILING_TAKE_PROFIT: .4
 
   # Trading fee in % per trade.
   # If using 0.75% (using BNB for fees) you must have BNB in your account to cover trading fees.
@@ -88,4 +91,3 @@ trading_options:
     #    - signalsamplemod
 #        - custsignalmod
     - custsignalmod_speed
-
