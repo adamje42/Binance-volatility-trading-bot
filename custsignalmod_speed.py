@@ -19,7 +19,7 @@ config_file = args.config if args.config else 'config/config.yml'
 parsed_config = load_config(config_file)
 
 OSC_INDICATORS = ['MACD', 'Stoch.RSI', 'Mom'] # Indicators to use in Oscillator analysis
-OSC_THRESHOLD = 1 # Must be less or equal to number of items in OSC_INDICATORS
+OSC_THRESHOLD = 2 # Must be less or equal to number of items in OSC_INDICATORS
 MA_INDICATORS = ['EMA10', 'EMA20'] # Indicators to use in Moving averages analysis
 MA_THRESHOLD = 1 # Must be less or equal to number of items in MA_INDICATORS
 INTERVAL = Interval.INTERVAL_5_MINUTES #Timeframe for analysis
