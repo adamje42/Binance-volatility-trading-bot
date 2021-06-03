@@ -57,12 +57,12 @@ trading_options:
   CUSTOM_LIST: True
 
   # Name of custom tickers list
-  TICKERS_LIST: 'tickers.txt'
+  TICKERS_LIST: 'tickers_BTC.txt'
 
   # Use custom signals list for checking TradingView's opinion of the current market state.
   CUSTOM_SIGNALS: False
   # Name of custom signals list
-  SIGNALS_LIST: 'signalsample.txt'
+  SIGNALS_LIST: 'signalsample_BTC.txt'
   # Specify in minutes the frequency to check for trading signals from TradingView
   SIGNALS_FREQUENCY: 1
 
@@ -85,6 +85,6 @@ trading_options:
   SIGNALLING_MODULES:
     #    - pausebotmod
     #    - signalsamplemod
-    - custsignalmod
+    - custsignalmod_speed
 
 
