@@ -63,6 +63,7 @@ class txcolors:
     SELL_PROFIT = '\033[32m'
     DIM = '\033[2m\033[35m'
     DEFAULT = '\033[39m'
+    TPADJ = '\033[36m'
 
 
 # tracks profit/loss each session
@@ -423,9 +424,9 @@ def sell_coins():
         if LastPrice > TP and USE_TRAILING_STOP_LOSS:
 
             # increasing TP by TRAILING_TAKE_PROFIT (essentially next time to readjust SL)
-            coins_bought[coin]['take_profit'] = PriceChange + TRAILING_TAKE_PROFIT
             coins_bought[coin]['stop_loss'] = coins_bought[coin]['take_profit'] - TRAILING_STOP_LOSS
-            if DEBUG: print(f"{coin} TP reached, adjusting TP {coins_bought[coin]['take_profit']:.{decimals()}f}  and SL {coins_bought[coin]['stop_loss']:.{decimals()}f} accordingly to lock-in profit")
+            coins_bought[coin]['take_profit'] = PriceChange + TRAILING_TAKE_PROFIT
+            print(f"{txcolors.TPADJ}{coin} TP reached, adjusting TP {coins_bought[coin]['take_profit']:.{decimals()}f}  and SL {coins_bought[coin]['stop_loss']:.{decimals()}f} accordingly to lock-in profit")
             continue
 
         # check that the price is below the stop loss or above take profit (if trailing stop loss not used) and sell if this is the case
