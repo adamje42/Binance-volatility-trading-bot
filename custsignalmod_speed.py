@@ -15,13 +15,13 @@ from helpers.parameters import load_config, parse_args
 
 
 args = parse_args()
-config_file = args.config if args.config else 'config/config.yml'
+config_file = args.config if args.config else 'config.yml'
 parsed_config = load_config(config_file)
 
-OSC_INDICATORS = ['MACD', 'Stoch.RSI', 'Mom'] # Indicators to use in Oscillator analysis
+OSC_INDICATORS = ['RSI', 'MACD', 'Stoch.RSI', 'Mom', 'BBP'] # Indicators to use in Oscillator analysis
 OSC_THRESHOLD = 2 # Must be less or equal to number of items in OSC_INDICATORS
-MA_INDICATORS = ['EMA10', 'EMA20'] # Indicators to use in Moving averages analysis
-MA_THRESHOLD = 1 # Must be less or equal to number of items in MA_INDICATORS
+MA_INDICATORS = ['EMA10', 'EMA20', 'Ichimoku','VWMA'] # Indicators to use in Moving averages analysis
+MA_THRESHOLD = 2 # Must be less or equal to number of items in MA_INDICATORS
 INTERVAL = Interval.INTERVAL_5_MINUTES #Timeframe for analysis
 
 EXCHANGE = 'BINANCE'
