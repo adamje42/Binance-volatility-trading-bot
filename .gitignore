@@ -12,3 +12,5 @@ __*__
 # IDE settings
 .vscode
 signals/custsignalmod.exs
+DeepQBot.py
+run.py

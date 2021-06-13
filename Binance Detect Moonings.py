@@ -191,6 +191,8 @@ def wait_for_price():
     # retrieve latest prices
     get_price()
 
+    externals = external_signals()
+    exnumber = 0
     # calculate the difference in prices
     for coin in historical_prices[hsp_head]:
 
@@ -226,10 +228,6 @@ def wait_for_price():
 
     # Disabled until fix
     #print(f'Up: {coins_up} Down: {coins_down} Unchanged: {coins_unchanged}')
-
-    # Here goes new code for external signalling
-    externals = external_signals()
-    exnumber = 0
 
     for excoin in externals:
         if excoin not in volatile_coins and excoin not in coins_bought and (len(coins_bought) + exnumber) < TRADE_SLOTS:
@@ -472,7 +470,7 @@ def sell_coins():
             continue
 
         # check that the price is below the stop loss or above take profit (if trailing stop loss not used) and sell if this is the case
-        if LastPrice < SL or LastPrice > TP and not USE_TRAILING_STOP_LOSS:
+        if coin in externals or LastPrice < SL or LastPrice > TP and not USE_TRAILING_STOP_LOSS:
             print(f"{txcolors.SELL_PROFIT if PriceChange >= 0. else txcolors.SELL_LOSS}TP or SL reached, selling {coins_bought[coin]['volume']} {coin} - {float(BuyPrice):g} - {float(LastPrice):g} : {PriceChange-(buyFee+sellFee):.2f}% Est: {(QUANTITY*(PriceChange-(buyFee+sellFee)))/100:.{decimals()}f} {PAIR_WITH}{txcolors.DEFAULT}")
 
             # if coins_bought[coin]['orderid'] is coin_order_id:
