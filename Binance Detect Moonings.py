@@ -116,6 +116,7 @@ class St_ampe_dOut:
 
 sys.stdout = St_ampe_dOut()
 
+
 def is_fiat():
     # check if we are using a fiat as a base currency
     global hsp_head
@@ -127,6 +128,7 @@ def is_fiat():
         return True
     else:
         return False
+
 
 def decimals():
     # set number of decimals for reporting fractions
@@ -256,6 +258,22 @@ def external_signals():
     return external_list
 
 
+def sell_external_signals():
+    external_list = {}
+    signals = {}
+
+    # check directory and load pairs from files into external_list
+    signals = glob.glob("signals/*.sell")
+    for filename in signals:
+        for line in open(filename):
+            symbol = line.strip()
+            external_list[symbol] = symbol
+        try:
+            os.remove(filename)
+        except:
+            if DEBUG: print(f'{txcolors.WARNING}Could not remove external signalling file{txcolors.DEFAULT}')                
+
+
 def balance_report():
     global profit_history, unrealised_percent, trade_wins, trade_losses
     DECIMALS = int(decimals())
@@ -270,9 +288,7 @@ def balance_report():
     PROFIT_HISTORY = round(profit_history, 2)
     PROFIT_HISTORY_ALL = round(profit_history_all, 2)
     PROFIT_TOTAL = round(profit_total, DECIMALS)
-    # truncating some of the above values to the correct decimal places before printing
-
-    
+    # truncating some of the above values to the correct decimal places before printing    
 
     if len(coins_bought) > 0:
         UNREALISED_PERCENT = round(unrealised_percent/len(coins_bought), 2)
@@ -428,7 +444,9 @@ def buy():
 
 def sell_coins():
     '''sell coins that have reached the STOP LOSS or TAKE PROFIT threshold'''
+    
     global hsp_head, session_profit, profit_history, coin_order_id, trade_wins, trade_losses, profit_history_all, profit_total
+    externals = sell_external_signals()                                   
     last_price = get_price(False) # don't populate rolling window
     #last_price = get_price(add_to_historical=True) # don't populate rolling window
     coins_sold = {}
